@@ -28,7 +28,7 @@ class Carta:
             raise ValueError(
                 f"{nino['nombre']} no tiene los puntos requeridos para "
                 f"'{regalo['nombre']}'")
-        
+
         execute(
             "INSERT INTO detalles_carta (id_carta, id_regalo, cantidad) "
             "VALUES (%s, %s, %s) "
