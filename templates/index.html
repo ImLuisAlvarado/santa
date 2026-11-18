@@ -7,6 +7,23 @@
 </head>
 <body>
     <h1>Gestor de Santa</h1>
-    <p>Niños registrados: {{ ninos|length }}</p>
+    <section>
+        Secciones:
+        <button><a href="/ninos">Niños</a></button>
+        <button><a href="/regalos">Regalos</a></button>
+        <button><a href="/cartas">Cartas</a></button>
+
+
+    </section>
+    <h2>Dashboard</h2>
+    
+  <p>Niños registrados: {{ ninos|length }}</p>
+  <p>Cartas recibidas: {{ cartas|length }}</p>
+  <p>Cantidad de regalos: {{ regalos|length }}</p>
+  
+  <p>Niños buenos: {{ ninos | selectattr('lista', 'equalto', 'lista_buena') | list | length }}</p>
+  <p>Niños malos: {{ ninos | selectattr('lista', 'equalto', 'lista_mala') | list | length }}</p>
+
+  <p>Duendes: {{ duendes|length }}</p>
 </body>
 </html>
