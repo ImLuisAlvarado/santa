@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Niño</title>
+</head>
+<body>
+    <a href="{{ url_for('list_ninos') }}">Volver</a>
+    <h1>{{ 'Editar Niño' if nino else 'Registrar Nuevo Niño' }}</h1>
+
+    {% if error %}
+        <p>Error: {{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <div>
+            <label for="nombre">Nombre completo:</label><br>
+            <input type="text" id="nombre" name="nombre" required value="{{ nino.nombre if nino else '' }}">
+        </div>
+        <br>
+
+        <div>
+            <label for="pais">País:</label><br>
+            <input type="text" id="pais" name="pais" required value="{{ nino.pais if nino else '' }}">
+        </div>
+        <br>
+
+        <div>
+            <label for="direccion">Dirección:</label><br>
+            <input type="text" id="direccion" name="direccion" required value="{{ nino.direccion if nino else '' }}">
+        </div>
+        <br>
+
+        <div>
+            <label for="puntos_comportamiento">Puntos de comportamiento (0 - 100):</label><br>
+            <input type="number" id="puntos_comportamiento" name="puntos_comportamiento" min="0" max="100" required
+                value="{{ nino.puntos_comportamiento if nino else 50 }}">
+            <p>(50 o más = Lista Buena | Menos de 50 = Lista Mala)</p>
+        </div>
+
+        <button type="submit">{{ 'Guardar Cambios' if nino else 'Registrar Niño' }}</button>
+        <a href="{{ url_for('list_ninos') }}">Cancelar</a>
+    </form>
+</body>
+</html>
