@@ -3,11 +3,22 @@ from persistence.db import fetch_all, fetch_one, execute
 
 class Nino:
     def __init__(self, nombre, direccion, pais, puntos_comportamiento=0, id_nino=None):
+        if not nombre or not nombre.strip():
+            raise ValueError("El nombre del niño es obligatorio.")
+        if not direccion or not direccion.strip():
+            raise ValueError("La dirección es obligatoria.")
+        if not pais or not pais.strip():
+            raise ValueError("El país es obligatorio.")
+
+        puntos = int(puntos_comportamiento)
+        if puntos < 0 or puntos > 100:
+            raise ValueError("Los puntos deben estar entre 0 y 100.")
+
         self.id_nino = id_nino
-        self.nombre = nombre
-        self.direccion = direccion
-        self.pais = pais
-        self.puntos_comportamiento = int(puntos_comportamiento)
+        self.nombre = nombre.strip()
+        self.direccion = direccion.strip()
+        self.pais = pais.strip()
+        self.puntos_comportamiento = puntos
 
     def save(self):
         self.id_nino = execute(

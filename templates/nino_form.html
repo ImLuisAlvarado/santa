@@ -35,7 +35,7 @@
         <div>
             <label for="puntos_comportamiento">Puntos de comportamiento (0 - 100):</label><br>
             <input type="number" id="puntos_comportamiento" name="puntos_comportamiento" min="0" max="100" required
-                value="{{ nino.puntos_comportamiento if nino else 50 }}">
+                value="{{ nino.puntos_comportamiento if nino else 0 }}">
             <p>(50 o más = Lista Buena | Menos de 50 = Lista Mala)</p>
         </div>
 
