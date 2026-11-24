@@ -133,7 +133,7 @@ def test_get_detalles_carta(mock_fetch):
     mock_fetch.assert_called_once()
 
 
-@patch("entities.carta.fetch_all", return_value=[{"id_carta": 1, "id_nino": 1, "nombre": "Manuel"}])
+@patch("entities.carta.fetch_one", return_value={"id_carta": 1, "id_nino": 1, "nombre": "Manuel"})
 def test_get_by_id_carta(mock_fetch):
     carta = Carta.get_by_id(1)
     assert carta["id_carta"] == 1
