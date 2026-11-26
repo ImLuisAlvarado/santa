@@ -1,7 +1,15 @@
-from flask import request, redirect
-from entities.duende import Duende
+from flask import request, redirect, render_template
+from entities.duende import Duende, ESPECIALIDADES
+
 
 def routes_duendes(app):
+    @app.route('/duendes')
+    def list_duendes():
+        return render_template('duendes.html',
+                               duendes=Duende.get_all(),
+                               cartas=Duende.cartas_pendientes(),
+                               especialidades=ESPECIALIDADES)
+
     @app.route('/duende', methods=['POST'])
     def save_duende():
         try:
@@ -10,9 +18,12 @@ def routes_duendes(app):
         except ValueError as e:
             return str(e), 400
         duende.save()
-        return redirect('/')
+        return redirect('/duendes')
 
     @app.route('/duende/<int:id_duende>/asignar', methods=['POST'])
     def asignar_duende(id_duende):
-        Duende.asignar(id_duende, request.form.get('id_carta'))
-        return redirect('/')
+        try:
+            Duende.asignar(id_duende, request.form.get('id_carta'))
+        except ValueError as e:
+            return str(e), 400
+        return redirect('/duendes')
