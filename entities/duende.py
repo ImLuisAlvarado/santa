@@ -1,4 +1,4 @@
-from persistence.db import fetch_all, execute
+from persistence.db import fetch_all, fetch_one, execute
 
 ESPECIALIDADES = ('carpintero', 'electronica', 'empaque')
 
@@ -30,7 +30,26 @@ class Duende:
             "ORDER BY d.nombre")
 
     @staticmethod
+    def get_by_id(id_duende):
+        return fetch_one("SELECT * FROM duendes WHERE id_duende = %s", (id_duende,))
+
+    @staticmethod
+    def cartas_pendientes():
+        """Cartas que todavia no van cargadas en el trineo."""
+        return fetch_all(
+            "SELECT c.id_carta, n.nombre AS nino, c.estado_preparacion "
+            "FROM cartas c JOIN ninos n ON n.id_nino = c.id_nino "
+            "WHERE c.estado_preparacion <> 'cargada_en_trineo' "
+            "ORDER BY c.fecha_recepcion")
+
+    @staticmethod
     def asignar(id_duende, id_carta):
         """id_carta vacio/None libera al duende."""
+        if not Duende.get_by_id(id_duende):
+            raise ValueError('Duende inexistente')
+        id_carta = int(id_carta) if id_carta else None
+        if id_carta is not None and not fetch_one(
+                "SELECT id_carta FROM cartas WHERE id_carta = %s", (id_carta,)):
+            raise ValueError('Carta inexistente')
         execute("UPDATE duendes SET id_carta_asignada = %s WHERE id_duende = %s",
-                (id_carta or None, id_duende))
+                (id_carta, id_duende))
