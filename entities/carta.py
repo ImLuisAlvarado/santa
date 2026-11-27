@@ -1,4 +1,4 @@
-from persistence.db import fetch_all, execute
+from persistence.db import fetch_all, fetch_one, execute
 from entities.nino import Nino
 from entities.regalo import Regalo
 
@@ -41,6 +41,16 @@ class Carta:
         return fetch_all("SELECT * FROM vista_cartas_resumen ORDER BY fecha_recepcion DESC")
 
     @staticmethod
+    def get_by_id(id_carta):
+        return fetch_one(
+            "SELECT c.id_carta, c.id_nino, c.fecha_recepcion, c.estado_preparacion, "
+            "n.nombre AS nino, n.puntos_comportamiento, n.lista "
+            "FROM cartas c JOIN ninos n ON n.id_nino = c.id_nino "
+            "WHERE c.id_carta = %s",
+            (id_carta,),
+        )
+
+    @staticmethod
     def get_detalles(id_carta):
         return fetch_all(
             "SELECT d.id_detalle, r.nombre, r.categoria_juguete, d.cantidad "
@@ -53,3 +63,11 @@ class Carta:
             raise ValueError('Estado invalido')
         execute("UPDATE cartas SET estado_preparacion = %s WHERE id_carta = %s",
                 (estado, id_carta))
+
+    @staticmethod
+    def eliminar_regalo(id_detalle):
+        execute("DELETE FROM detalles_carta WHERE id_detalle = %s", (id_detalle,))
+
+    @staticmethod
+    def delete(id_carta):
+        execute("DELETE FROM cartas WHERE id_carta = %s", (id_carta,))

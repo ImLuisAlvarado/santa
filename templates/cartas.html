@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartas – Gestor de Santa</title>
+</head>
+
+<body>
+    <h1>Gestor de Santa</h1>
+    <section>
+        Secciones:
+        <button><a href="/">Dashboard</a></button>
+        <button><a href="/ninos">Niños</a></button>
+        <button><a href="/regalos">Regalos</a></button>
+        <button><a href="/cartas">Cartas</a></button>
+    </section>
+
+    <!-- ── Mensajes flash ── -->
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}
+    {% for category, msg in msgs %}
+    <p style="color: {{ 'green' if category == 'success' else 'red' }};">
+        <strong>{{ msg }}</strong>
+    </p>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <h2>Cartas de los Niños</h2>
+
+    <!-- ── Formulario: nueva carta ── -->
+    <h3>Nueva carta</h3>
+    <form action="/carta" method="post">
+        <label>Niño:
+            <select name="id_nino" required>
+                <option value="" disabled selected>— selecciona un niño —</option>
+                {% for n in ninos %}
+                <option value="{{ n.id_nino }}">{{ n.nombre }} ({{ n.puntos_comportamiento }} pts)</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Regalo inicial (opcional):
+            <select name="id_regalo">
+                <option value="">— ninguno —</option>
+                {% for r in regalos %}
+                <option value="{{ r.id_regalo }}">{{ r.nombre }} (req. {{ r.puntos_comportamiento_requeridos }} pts)
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Cantidad:
+            <input type="number" name="cantidad" value="1" min="1" style="width:60px;">
+        </label>
+
+        <button type="submit">Crear carta</button>
+    </form>
+
+    <!-- ── Tabla de cartas ── -->
+    {% if cartas %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Niño</th>
+                <th>País</th>
+                <th>Lista</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Regalos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in cartas %}
+            <tr>
+                <td>{{ c.id_carta }}</td>
+                <td>{{ c.nino }}</td>
+                <td>{{ c.pais }}</td>
+                <td>
+                    {% if c.lista == 'lista_buena' %}
+                    Buena
+                    {% else %}
+                    Mala
+                    {% endif %}
+                </td>
+                <td>{{ c.fecha_recepcion }}</td>
+                <td>
+                    <form action="/carta/{{ c.id_carta }}/estado" method="post" style="display:inline;">
+                        <select name="estado_preparacion" onchange="this.form.submit()">
+                            {% for e in estados %}
+                            <option value="{{ e }}" {{ 'selected' if c.estado_preparacion==e }}>{{ e }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
+                <td>{{ c.total_regalos }}</td>
+                <td>
+                    <a href="/cartas/{{ c.id_carta }}"><button type="button">Ver detalle</button></a>
+                    <form action="/carta/{{ c.id_carta }}/eliminar" method="post" style="display:inline;"
+                        onsubmit="return confirm('¿Eliminar esta carta y todos sus regalos?');">
+                        <button type="submit">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No hay cartas registradas aún.</p>
+    {% endif %}
+
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta #{{ carta.id_carta }} – Gestor de Santa</title>
+</head>
+
+<body>
+    <h1>Gestor de Santa</h1>
+    <section>
+        Secciones:
+        <button><a href="/">Dashboard</a></button>
+        <button><a href="/ninos">Niños</a></button>
+        <button><a href="/regalos">Regalos</a></button>
+        <button><a href="/cartas">Cartas</a></button>
+    </section>
+
+    <!-- ── Mensajes flash ── -->
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}
+    {% for category, msg in msgs %}
+    <p style="color: {{ 'green' if category == 'success' else 'red' }};">
+        <strong>{{ msg }}</strong>
+    </p>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <!-- ── Encabezado con datos de la carta y el niño ── -->
+    <h2>Carta #{{ carta.id_carta }}</h2>
+    <p>
+        <strong>Niño:</strong> {{ carta.nino }}<br>
+        <strong>Puntos de comportamiento:</strong> {{ carta.puntos_comportamiento }}<br>
+        <strong>Lista:</strong>
+        {% if carta.lista == 'lista_buena' %}
+        Lista Buena
+        {% else %}
+        Lista Mala
+        {% endif %}<br>
+        <strong>Fecha de recepción:</strong> {{ carta.fecha_recepcion }}<br>
+        <strong>Estado:</strong> {{ carta.estado_preparacion }}
+    </p>
+
+    <!-- ── Cambiar estado ── -->
+    <h3>Cambiar estado</h3>
+    <form action="/carta/{{ carta.id_carta }}/estado" method="post">
+        <select name="estado_preparacion">
+            {% for e in estados %}
+            <option value="{{ e }}" {{ 'selected' if carta.estado_preparacion==e }}>{{ e }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Actualizar estado</button>
+    </form>
+
+    <!-- ── Regalos en la carta ── -->
+    <h3>Regalos en esta carta</h3>
+    {% if detalles %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Cantidad</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in detalles %}
+            <tr>
+                <td>{{ d.nombre }}</td>
+                <td>{{ d.categoria_juguete }}</td>
+                <td>{{ d.cantidad }}</td>
+                <td>
+                    <form action="/carta/{{ carta.id_carta }}/regalo/{{ d.id_detalle }}/eliminar" method="post"
+                        onsubmit="return confirm('¿Quitar este regalo de la carta?');">
+                        <button type="submit">Quitar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Esta carta aún no tiene regalos.</p>
+    {% endif %}
+
+    <!-- ── Agregar regalo ── -->
+    <h3>Agregar regalo</h3>
+    <form action="/carta/{{ carta.id_carta }}/regalo" method="post">
+        <label>Regalo:
+            <select name="id_regalo" required>
+                <option value="" disabled selected>— selecciona un regalo —</option>
+                {% for r in regalos %}
+                <option value="{{ r.id_regalo }}">{{ r.nombre }} (req. {{ r.puntos_comportamiento_requeridos }} pts)
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Cantidad:
+            <input type="number" name="cantidad" value="1" min="1" style="width:60px;">
+        </label>
+        <button type="submit">Agregar</button>
+    </form>
+
+    <br>
+    <a href="/cartas">← Volver a Cartas</a>
+
+</body>
+
+</html>

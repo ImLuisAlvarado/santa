@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
   pull_request:
-    branches: [main]
+    branches: ['**']
 
 jobs:
   docker:
@@ -30,6 +30,9 @@ jobs:
           echo "La app no respondio a tiempo"
           docker compose logs
           exit 1
+
+      - name: Ejecutar pruebas unitarias con pytest
+        run: docker compose exec -T web pytest -v
 
       - name: Mostrar logs si falla
         if: failure()
